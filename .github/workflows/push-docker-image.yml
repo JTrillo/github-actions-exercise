@@ -1,0 +1,23 @@
+name: Push Docker Image on Docker Hub
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOCKER_ID: jtrillo
+  DOCKER_IMAGE: hello-world-github-actions
+
+jobs:
+  buildAndPush:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build -f -t $DOCKER_ID/$DOCKER_IMAGE:$GITHUB_SHA .
+    - name: Docker Hub login
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PW }}
+      run: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
+    - name: Push the Docker image
+      run: docker push $DOCKER_ID/$DOCKER_IMAGE:$GITHUB_SHA
